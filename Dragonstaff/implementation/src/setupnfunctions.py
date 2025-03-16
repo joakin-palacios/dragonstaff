@@ -30,9 +30,9 @@ COLORS = (RED, YELLOW, GREEN, CYAN, BLUE, PURPLE, ORANGE, WHITE, BLACK)
 
 # Neopixel Setup
 BRIGHTNESS= 0.05 # between 0 and 1
-np = neopixel.NeoPixel(Pin(19), 10) # 10 cuz of nr of leds
-np2 = neopixel.NeoPixel(Pin(20), 10)
-np3 = neopixel.NeoPixel(Pin(21), 10)
+np = neopixel.NeoPixel(Pin(19), 20) # 10 cuz of nr of leds
+np2 = neopixel.NeoPixel(Pin(20), 20)
+np3 = neopixel.NeoPixel(Pin(21), 20)
 
 
 
