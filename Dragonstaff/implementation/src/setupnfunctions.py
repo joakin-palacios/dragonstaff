@@ -2,6 +2,7 @@ from machine import Pin
 import neopixel
 import uasyncio
 import random as Rondo
+import ledspokehandler
 
 
 # General Setup
@@ -30,9 +31,9 @@ COLORS = (RED, YELLOW, GREEN, CYAN, BLUE, PURPLE, ORANGE, WHITE, BLACK)
 
 # Neopixel Setup
 BRIGHTNESS= 0.05 # between 0 and 1
-np = neopixel.NeoPixel(Pin(19), 20) # 10 cuz of nr of leds
-np2 = neopixel.NeoPixel(Pin(20), 20)
-np3 = neopixel.NeoPixel(Pin(21), 20)
+np = ledspokehandler.ledSpoke(mcuPin=19, nr_of_leds=20)
+np2 = ledspokehandler.ledSpoke(mcuPin=20, nr_of_leds=20) 
+np3 = ledspokehandler.ledSpoke(mcuPin=21, nr_of_leds=20) 
 
 
 
@@ -149,8 +150,6 @@ def set_waiting_time(raw_request):
     print (f"time has set to {wait_time}")
     return wait_time
     
-    return 100
-
 def findrgbs(string):
     # Extract the color code from the string
     string=str(string)
@@ -188,9 +187,9 @@ async def rainbow(np):
             break
         for i in range(n): # sets each Led to the corresponding rainbow-wheel color
             rc_index = (i * 256 // n) + j
-            np[i]= wheel(rc_index & 255)
+            np.setcolor(ith_led=i, color=wheel(rc_index & 255))
         await uasyncio.sleep(0)
-        np.write()
+        np.illuminate()
         await uasyncio.sleep_ms(int(wait/5))
 
 
@@ -198,15 +197,16 @@ async def rainbow(np):
 
 async def fillpix (np):
     global color
-    np.fill(color)
+    np.np.fill(color)
     await uasyncio.sleep(0)
-    np.write()
+    np.illuminate()
 
 async def initialize(np):
-    for i in range (10):
-        np[i]=COLORS[i%len(COLORS)]
+    n=np.n
+    for i in range (n):
+        np.setcolor(ith_led=i, color=COLORS[i%len(COLORS)])
         await uasyncio.sleep(0)
-        np.write()
+        np.illuminate()
 
 async def cycle(np, rounds=1):
     global wait, color, co_color
@@ -215,10 +215,10 @@ async def cycle(np, rounds=1):
     for i in range(rounds * n):
         if status!='Cycle': # break if the mode has changed
             break
-        np.fill(co_color)         # make all leds co_colored !
-        np[i % n] = color        # turn the i-th led to the color
+        np.np.fill(co_color)         # make all leds co_colored !
+        np.setcolor(i % n, color=color)        # turn the i-th led to the color
         await uasyncio.sleep(0)  # wait for all them nps to be done 
-        np.write()
+        np.illuminate()
         await uasyncio.sleep_ms(wait)
 
 async def bycle(np, rounds=1):
@@ -228,12 +228,12 @@ async def bycle(np, rounds=1):
     for i in range(rounds * n):
         if status!='Bycle': # break if the mode has changed
             break
-        np.fill(BLACK)         # make all leds BLACK !
-        np[i % n] = color
-        np[n-1-(i % n)] = color
+        np.np.fill(BLACK)         # make all leds BLACK !
+        np.setcolor(i % n, color)
+        np.setcolor(n-1-(i % n), color)
         # turn the i-th led to the color
         await uasyncio.sleep(0)  # wait for all them nps to be done 
-        np.write()
+        np.illuminate()
         await uasyncio.sleep_ms(wait)
 
 async def bounce(np, rounds=2):
@@ -242,13 +242,13 @@ async def bounce(np, rounds=2):
     for i in range(rounds * n):
         if status!='Bounce': # break if the mode has changed
             break
-        np.fill(color)            # color all them pixels 
+        np.np.fill(color)            # color all them pixels 
         if (i // n) % 2 == 0:     # check if it is going forward
-            np[i % n] = (co_color) # co_color out the i-th led 
+            np.setcolor(i % n, co_color) # co_color out the i-th led 
         else:
-            np[n - 1 - (i % n)] = (co_color)
+            np.setcolor(n - 1 - (i % n), co_color)
         await uasyncio.sleep(0)    
-        np.write()
+        np.illuminate()
         await uasyncio.sleep_ms(wait)
         
 def map_to_rgb(x, y, z):
@@ -266,14 +266,14 @@ async def blink(np) :
     n=np.n
     previous_np=[0 for _ in range(n)]
     for i in range(n):
-        previous_np[i]=np[i]
-    np.fill(co_color)
-    np.write()
+        previous_np[i]=np.np[i]
+    np.np.fill(co_color)
+    np.illuminate()
     await uasyncio.sleep_ms(wait*5)
     for i in range(n):
-        np[i]=previous_np[i]
+        np.setcolor(i, previous_np[i])
         await uasyncio.sleep(0)
-    np.write()
+    np.illuminate()
     await uasyncio.sleep_ms(wait*5)
 
 async def led_blink(on_time_ms = 5, off_time_ms= 5) :
@@ -293,43 +293,43 @@ async def firework(np):
     for i in range(n):
         if status!='Firework': # break if the mode has changed
             break
-        np.fill(BLACK)         # make all leds Black !
-        np[i % n] = icolor        # turn the i-th led to the color
+        np.np.fill(BLACK)         # make all leds Black !
+        np.np[i % n] = icolor        # turn the i-th led to the color
         await uasyncio.sleep(0)  # wait for all them nps to be done 
-        np.write()
+        np.illuminate()
         await uasyncio.sleep_ms(wait)
         
-        np[i % n] = icocolor        # turn the i-th led to the color
+        np.np[i % n] = icocolor        # turn the i-th led to the color
         await uasyncio.sleep(0)  # wait for all them nps to be done 
-        np.write()
+        np.illuminate()
         await uasyncio.sleep_ms(wait)
         
-    np.fill(BLACK)
+    np.np.fill(BLACK)
     for i in range(2):
-            np[n-i-1] = icolor
+            np.np[n-i-1] = icolor
     await uasyncio.sleep(0)
-    np.write()
+    np.illuminate()
     await uasyncio.sleep_ms(wait*2)
         
     for i in range(2):
-        np[n-i-1] = icocolor
+        np.np[n-i-1] = icocolor
     await uasyncio.sleep(0)
-    np.write()
+    np.illuminate()
     await uasyncio.sleep_ms(wait*2)
     
     for i in range (15):
         if status!='Firework': # break if the mode has changed
             break
         for i in range(3):
-            np[n-i-1] = icolor
+            np.np[n-i-1] = icolor
         await uasyncio.sleep(0)
-        np.write()
+        np.illuminate()
         await uasyncio.sleep_ms(wait*2)
         
         for i in range(3):
-            np[n-i-1] = icocolor
+            np.np[n-i-1] = icocolor
         await uasyncio.sleep(0)
-        np.write()
+        np.illuminate()
         await uasyncio.sleep_ms(wait*2)
         icolor = (int(icolor[0]*factor),int(icolor[1]*factor),int(icolor[2]*factor))
         icocolor = (int(icocolor[0]*factor),int(icocolor[1]*factor),int(icocolor[2]*factor))
@@ -362,10 +362,10 @@ async def random(np) :
     rand_wait=Rondo.randrange(wait)
     
     #make all leds black
-    np.fill(BLACK)
+    np.np.fill(BLACK)
     
     # Usual list
-    U_list= [0,1,2,3,4,5,6,7,8,9]
+    U_list= list(range(n))
     
     # randomly chosen nrs out of list
     # choose something out of the list and then delete from list // add to new list
@@ -377,6 +377,6 @@ async def random(np) :
     
     # pick a 'leds_on' nr of items out of a range n list, asign a random color (from the weel)
     for i in rand_list:
-        np[i]= wheel(Rondo.randrange(256))
-    np.write()    
+        np.np[i]= wheel(Rondo.randrange(256))
+    np.illuminate()    
     await uasyncio.sleep_ms(rand_wait)
