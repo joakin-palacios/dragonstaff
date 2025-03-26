@@ -1,0 +1,19 @@
+Tasks 18.03.25
+Software development:
+[ ] decide if I want to rebuild the web page from scratch, try to finish the one generative one, or build on top of the current one in use
+[ ] load setupnfunctions to slave/sideb/follower pico
+[ ] decide how to name both picos: 
+   [ ] Master/Slave
+   [ ] SideA/SideB
+   [ ] Leader/Follower
+[ ] List what else needs software development
+
+Hardware development:   
+[ ] decide on a way to hold the beginnings of the led spokes in place
+   [ ] glue
+   [ ] tape
+[ ] research ways for the battery not to fly off whenever the dragonstaff falls
+[ ]
+[ ]
+[ ]
+[ ]
