@@ -1,7 +1,13 @@
 Tasks 18.03.25
 Software development:
 Web
-[ ] decide if I want to rebuild the web page from scratch, try to finish the one generative one, or build on top of the current one in use
+[x] decide if I want to rebuild the web page from scratch, try to finish the one generative one, or build on top of the current one in use
+=> Decided. I will build on top of the current one
+[ ] Add a settings page
+
+Parser
+[ ] research behaviour of html so that (I want to know when what will be sent in the meta data)
+
 MCU
 [ ] load setupnfunctions to slave/sideb/follower pico
 [ ] decide how to name both picos: 
@@ -9,6 +15,7 @@ MCU
    [ ] SideA/SideB
    [ ] Leader/Follower
 [ ] List what else needs software development
+
 Development
 [x] Create a class for a led spoke (so that i can have 3 instances of it)
     each lspoke will be able to save the following info independently of one another
@@ -26,6 +33,9 @@ Development
     lspoke.set_color(ith spoke,(R,G,B))
 [x] update setupnfunctions to work with the class    
     - but i was lazy, so i didnt use the functions, but the fact that the class has a .np
+    [ ] change the class so that to change settings inside of them one has to use one of the class functions to set it (good architecture) !!! 
+[ ] find a way for the led control to run in a separate core (so that a faster refresh rate can be chosen)
+[ ] explore ways to go faster than 1ms change rate :) 
 
 
 Hardware development:   
@@ -33,7 +43,7 @@ Hardware development:
    [x] glue
    [-] tape
 [ ] research ways for the battery not to fly off whenever the dragonstaff falls
-[ ]
-[ ]
-[ ]
+[ ] re print the outermost part :D 
+[ ] 
+[ ] Research silicone mold options 
 [ ]
