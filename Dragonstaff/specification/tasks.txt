@@ -7,6 +7,8 @@ Web
 
 Parser
 [ ] research behaviour of html so that (I want to know when what will be sent in the meta data)
+   [ ] Try using GET / POST :) 
+[ ] Does this make sense? Design each request to be self-contained (e.g., /set?led=on instead of tracking LED state in RAM) 
 
 MCU
 [ ] load setupnfunctions to slave/sideb/follower pico
