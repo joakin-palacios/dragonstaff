@@ -90,10 +90,21 @@ async def pixelones():
                 current_status = 'Firework'
                 while status=='Firework':
                     await uasyncio.gather(firework(np), firework(np2), firework(np3))
+            elif status== 'OnlyEnds':
+                current_status = 'OnlyEnds'
+                while status=='OnlyEnds':
+                    await uasyncio.gather(only_ends(np), only_ends(np2), only_ends(np3))
+            elif status== 'OnlyEndsBlink':
+                current_status = 'OnlyEndsBlink'
+                while status=='OnlyEndsBlink':
+            elif status== 'AdditiveRandom':
+                current_status = 'AdditiveRandom'
+                while status=='AdditiveRandom':
+                    await uasyncio.gather(additive_random(np), additive_random(np2), additive_random(np3))                        await uasyncio.gather(only_ends(np, blink=True ), only_ends(np2, blink=True ), only_ends(np3, blink=True ))           
             elif status== 'Random':
                 current_status = 'Random'
                 while status=='Random':
-                    await uasyncio.gather(random(np), random(np2), random(np3))        
+                    await uasyncio.gather(random(np), random(np2), random(np3))
             current_color = color
         await uasyncio.sleep_ms(100)
 
@@ -137,6 +148,12 @@ async def modes(request):
     elif "/random_xD" in request:
         status="Random"
         
+    elif "/only_ends" in request:
+        status="OnlyEnds"
+        
+    elif "/only_ends_blink" in request:
+        status="OnlyEndsBlink" 
+
     await uasyncio.sleep(0)
     
 def set_waiting_time(raw_request):
@@ -335,7 +352,7 @@ async def firework(np):
         icocolor = (int(icocolor[0]*factor),int(icocolor[1]*factor),int(icocolor[2]*factor))
     
     
-async def random(np) :
+async def random(np):
     global wait
     # random leds get turned into random colors for a random amout of time :D
     # First we calculate the random nr of colors that will be colored
@@ -380,3 +397,37 @@ async def random(np) :
         np.np[i]= wheel(Rondo.randrange(256))
     np.illuminate()    
     await uasyncio.sleep_ms(rand_wait)
+    
+async def only_ends(np, end_length=3, blink=False):
+    global wait, color, co_color
+    n=np.n
+    for i in range (end_length):
+        np.setcolor(ith_led= n-i, color = color, duplicate= True)
+    np.illuminate()
+    await uasyncio.sleep_ms(wait)
+    if blink:
+        for i in range (end_length):
+            np.setcolor(ith_led= n-i, color = co_color, duplicate= True)
+        await uasyncio.sleep_ms(wait)
+        
+async def additive_random(np):
+    global wait
+    n=np.n
+    # ONE random led gets turned into a random color for
+    
+    def wheel(pos):
+        # Input a value 0 to 255 to get a color value.
+        # The colours are a transition r - g - b - back to r.
+        # Uses 85 cuz 255/3 = 85
+        if pos < 0 or pos > 255: # Out of bound
+            return (0, 0, 0)
+        if pos < 85: 
+            return (255 - pos * 3, pos * 3, 0)
+        if pos < 170:
+            pos -= 85
+            return (0, 255 - pos * 3, pos * 3)
+        pos -= 170
+        return (pos * 3, 0, 255 - pos * 3)
+    lucky_Led = Rondo.randrange(n)
+    lucky_color = wheel(Rondo.randrange(256))
+    np.setcolor(ith_led= lucky_Led, color = lucky_color)

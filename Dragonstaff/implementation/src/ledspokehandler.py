@@ -4,17 +4,16 @@ import neopixel
 
 
 class ledSpoke:
-    def __init__(self, mcuPin, nr_of_leds=20, duplicate=False):
+    def __init__(self, mcuPin, nr_of_leds=20):
         self.mcuPin = mcuPin
         self.n = nr_of_leds
-        self.duplicate = duplicate
         self.np = neopixel.NeoPixel(Pin(self.mcuPin), self.n)
         self.program = 'initialized'
         
     def illuminate(self):
         self.np.write()
         
-    def setcolor(self, ith_led, color):
+    def setcolor(self, ith_led, color, duplicate = False):
         if self.duplicate:
             self.np[int(self.n/2)+ith_led]=color
             pass
