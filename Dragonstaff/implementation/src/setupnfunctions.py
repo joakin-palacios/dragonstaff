@@ -97,10 +97,11 @@ async def pixelones():
             elif status== 'OnlyEndsBlink':
                 current_status = 'OnlyEndsBlink'
                 while status=='OnlyEndsBlink':
+                    await uasyncio.gather(only_ends(np, blink=True), only_ends(np2, blink=True), only_ends(np3, blink=True))
             elif status== 'AdditiveRandom':
                 current_status = 'AdditiveRandom'
                 while status=='AdditiveRandom':
-                    await uasyncio.gather(additive_random(np), additive_random(np2), additive_random(np3))                        await uasyncio.gather(only_ends(np, blink=True ), only_ends(np2, blink=True ), only_ends(np3, blink=True ))           
+                    await uasyncio.gather(additive_random(np), additive_random(np2), additive_random(np3))          
             elif status== 'Random':
                 current_status = 'Random'
                 while status=='Random':
@@ -431,3 +432,4 @@ async def additive_random(np):
     lucky_Led = Rondo.randrange(n)
     lucky_color = wheel(Rondo.randrange(256))
     np.setcolor(ith_led= lucky_Led, color = lucky_color)
+    np.illuminate()

@@ -14,7 +14,7 @@ class ledSpoke:
         self.np.write()
         
     def setcolor(self, ith_led, color, duplicate = False):
-        if self.duplicate:
+        if duplicate:
             self.np[int(self.n/2)+ith_led]=color
             pass
         self.np[ith_led]=color
