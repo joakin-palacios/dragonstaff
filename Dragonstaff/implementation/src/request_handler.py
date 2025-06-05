@@ -21,7 +21,7 @@ async def handle_request(reader, writer):
             print (f'{snf.status}  {snf.color}  {snf.co_color}  {snf.wait}')
             writer.write(bytes(f'{snf.status}  {snf.color}  {snf.co_color}  {snf.wait}', 'utf-8'))
         else:
-            html = await webpage.webpage(snf.color, snf.status)
+            html = webpage.webpage(snf.color, snf.status)
 #             print (html)
             writer.write(html)
         # allow other tasks to run while data being sent

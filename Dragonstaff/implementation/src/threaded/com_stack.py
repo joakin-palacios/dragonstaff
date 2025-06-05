@@ -48,41 +48,19 @@ def threaded_connection():
             print(f"Connected by {addr}")
 
             # Receive data from the client
-            raw_request = conn.recv(2048)
-            print(raw_request)
-            
-            request_str = raw_request.decode()
-            request_line = request_str.split('\r\n')[0]
-            print("Request line:", request_line)
-
-            # Split and safely extract path
-            parts = request_line.split()
-            if len(parts) >= 2:
-                method = parts[0]
-                path = parts[1]
-                
-                if path == '/inquisition':
-                    print(f'{snf.status}  {snf.color}  {snf.co_color}  {snf.wait}')
-                    conn.sendall(bytes(f'{snf.status}  {snf.color}  {snf.co_color}  {snf.wait}', 'utf-8'))
-                else:
-                    parser.modes(path)
-                    html = webpage.webpage(snf.color, snf.status)
-                    conn.sendall(html)
-            else:
-                print("Malformed request:", request_line)
-                conn.sendall(b"HTTP/1.1 400 Bad Request\r\n\r\n")
-# 
-#             try:
-#                 raw_request=raw_request.split()[1]
-#             except OSError as e:
-#                 print('connection error ' + str(e.errno) + " " + str(e))
-#             if raw_request == b'inquisition':
+            raw_request = conn.recv(1024)
+#             print("raw request:"+raw_request)
+            if  raw_request != b'':          
+                requested_action=raw_request.split()[1]
+                print("requested action")
+                print(requested_action)                
+            if raw_request == b'inquisition':
 #                 print (f'{snf.status}  {snf.color}  {snf.co_color}  {snf.wait}')
-#                 conn.sendall(bytes(f'{snf.status}  {snf.color}  {snf.co_color}  {snf.wait}', 'utf-8'))
-#             else:
-#                 parser.modes(raw_request)
-#                 html = webpage.webpage(snf.color, snf.status)
-#                 conn.sendall(html)
+                conn.sendall(bytes(f'{snf.status}  {snf.color}  {snf.co_color}  {snf.wait}', 'utf-8'))
+            else:
+                parser.modes(requested_action)
+                html = webpage.webpage(snf.color, snf.status)
+                conn.sendall(html)
             conn.close()
         except OSError as e:
             print('connection error ' + str(e.errno) + " " + str(e))

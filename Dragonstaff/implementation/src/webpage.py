@@ -1,6 +1,6 @@
 import setupnfunctions as snf
 
-async def webpage(color, state):
+def webpage(color, state):
     #Template HTML
     def hex_string (rgb):
         return '%02x%02x%02x' % (rgb[0], rgb[1], rgb[2])
