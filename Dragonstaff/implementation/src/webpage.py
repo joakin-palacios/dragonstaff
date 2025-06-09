@@ -1,6 +1,6 @@
 import setupnfunctions as snf
 
-def webpage(color, state):
+async def webpage(color, state):
     #Template HTML
     def hex_string (rgb):
         return '%02x%02x%02x' % (rgb[0], rgb[1], rgb[2])
@@ -103,6 +103,15 @@ def webpage(color, state):
             </form>
             <form action="/blink">
                 <button type="submit">Blink</button>
+            </form>
+            <form action="/only_ends">
+                <button type="submit">Only Ends</button>
+            </form>
+            <form action="/only_blink">
+                <button type="submit">Only Ends Blink</button>
+            </form>
+            <form action="/add_random">
+                <button type="submit">One at a time</button>
             </form>
             <form action="/cycle">
                 <button type="submit">Cycle</button>

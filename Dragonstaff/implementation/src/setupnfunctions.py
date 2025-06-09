@@ -152,8 +152,12 @@ async def modes(request):
     elif "/only_ends" in request:
         status="OnlyEnds"
         
-    elif "/only_ends_blink" in request:
-        status="OnlyEndsBlink" 
+    elif "/only_blink" in request:
+        status="OnlyEndsBlink"
+        
+    elif "/add_random" in request:
+        status="AdditiveRandom"    
+        
 
     await uasyncio.sleep(0)
     
@@ -403,12 +407,15 @@ async def only_ends(np, end_length=3, blink=False):
     global wait, color, co_color
     n=np.n
     for i in range (end_length):
-        np.setcolor(ith_led= n-i, color = color, duplicate= True)
+        np.setcolor(ith_led= 9-i, color = color)
+        np.setcolor(ith_led= 10+i, color = color)
     np.illuminate()
     await uasyncio.sleep_ms(wait)
     if blink:
         for i in range (end_length):
-            np.setcolor(ith_led= n-i, color = co_color, duplicate= True)
+            np.setcolor(ith_led= 9-i, color = co_color)
+            np.setcolor(ith_led= 10+i, color = co_color)
+        np.illuminate()            
         await uasyncio.sleep_ms(wait)
         
 async def additive_random(np):
@@ -433,3 +440,4 @@ async def additive_random(np):
     lucky_color = wheel(Rondo.randrange(256))
     np.setcolor(ith_led= lucky_Led, color = lucky_color)
     np.illuminate()
+    await uasyncio.sleep_ms(wait)

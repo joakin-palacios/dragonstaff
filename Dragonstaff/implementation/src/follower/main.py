@@ -42,7 +42,6 @@ def threaded_connection():
 
             # Create a socket and make a HTTP request
             s = socket.socket() # Open socket
-
             s.connect(addr)
             s.send(b"THE inquisition") # Send request
             ss=s.recv(512) # Store reply
@@ -52,7 +51,7 @@ def threaded_connection():
             
             
             s.close()          # Close socket
-            time.sleep(1.2)    # wait
+            time.sleep(0.8)    # wait
         except OSError as e:
             print('connection error ' + str(e.errno) + " " + str(e))
 
