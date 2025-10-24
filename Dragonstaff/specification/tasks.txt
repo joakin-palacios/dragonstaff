@@ -38,6 +38,9 @@ Development
     [ ] change the class so that to change settings inside of them one has to use one of the class functions to set it (good architecture) !!! 
 [ ] find a way for the led control to run in a separate core (so that a faster refresh rate can be chosen)
 [ ] explore ways to go faster than 1ms change rate :) 
+[ ] refactor firework function so that it can be used with 20 pixels variant :D
+[ ] add water effect mode
+[ ] add a setting where one side can be x mode and the other y 
 
 
 Hardware development:   
@@ -47,5 +50,6 @@ Hardware development:
 [ ] research ways for the battery not to fly off whenever the dragonstaff falls
 [ ] re print the outermost part :D 
 [ ] 
-[ ] Research silicone mold options 
+[-] Research silicone mold options 
+    [x] went with cloth as diffuser
 [ ]
