@@ -305,54 +305,61 @@ async def led_blink(on_time_ms = 5, off_time_ms= 5) :
         led.off()
         await uasyncio.sleep_ms(off_time_ms)
 
-async def firework(np):
+async def firework(np, divider=2, pops=15):
     global wait, color, co_color
     icolor = color
     icocolor = co_color
     factor = 0.75
     n = np.n
+    if (n % 2 == 0):
+        d = int(n/divider) # d = 20/2 = 10
+    else:
+        d = int((n-1)/divider)
+        
+    def repeat_pulses(rounds, fcolor):
+        for v in range (rounds):
+            np.np[d-v-1] = fcolor
+            np.np[d+v] = fcolor
+            
     # cycle
-    for i in range(n):
+    for i in range(d): # goes from 0 to 9
         if status!='Firework': # break if the mode has changed
             break
         np.np.fill(BLACK)         # make all leds Black !
         np.np[i % n] = icolor        # turn the i-th led to the color
+        np.np[(i + d) % n] = icolor        # turn the i-th led to the color
         await uasyncio.sleep(0)  # wait for all them nps to be done 
         np.illuminate()
         await uasyncio.sleep_ms(wait)
         
         np.np[i % n] = icocolor        # turn the i-th led to the color
+        np.np[(i + d) % n] = icolor 
         await uasyncio.sleep(0)  # wait for all them nps to be done 
         np.illuminate()
         await uasyncio.sleep_ms(wait)
         
     np.np.fill(BLACK)
-    for i in range(2):
-            np.np[n-i-1] = icolor
+    repeat_pulses(2, icolor)
     await uasyncio.sleep(0)
     np.illuminate()
     await uasyncio.sleep_ms(wait*2)
-        
-    for i in range(2):
-        np.np[n-i-1] = icocolor
+    repeat_pulses(2, icocolor)    
     await uasyncio.sleep(0)
     np.illuminate()
     await uasyncio.sleep_ms(wait*2)
     
-    for i in range (15):
+    for i in range (pops):
         if status!='Firework': # break if the mode has changed
             break
-        for i in range(3):
-            np.np[n-i-1] = icolor
+        repeat_pulses(3, icolor) 
+        await uasyncio.sleep(0)
+        np.illuminate()
+        await uasyncio.sleep_ms(wait*2)
+        repeat_pulses(3, icocolor) 
         await uasyncio.sleep(0)
         np.illuminate()
         await uasyncio.sleep_ms(wait*2)
         
-        for i in range(3):
-            np.np[n-i-1] = icocolor
-        await uasyncio.sleep(0)
-        np.illuminate()
-        await uasyncio.sleep_ms(wait*2)
         icolor = (int(icolor[0]*factor),int(icolor[1]*factor),int(icolor[2]*factor))
         icocolor = (int(icocolor[0]*factor),int(icocolor[1]*factor),int(icocolor[2]*factor))
     
