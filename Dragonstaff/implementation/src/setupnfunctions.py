@@ -62,7 +62,8 @@ async def pixelones():
                 await uasyncio.gather(initialize(np), initialize(np2), initialize(np3)) #---- initialize them lights ! ----
             elif status=='Monochrome':
                 current_status = 'Monochrome'
-                await uasyncio.gather(fillpix(np), fillpix(np2), fillpix(np3))
+                while status=='Monochrome':
+                    await uasyncio.gather(fillpix(np), fillpix(np2), fillpix(np3))
             elif status== 'Blink':
                 current_status = 'Blink'
                 while status=='Blink':
@@ -327,13 +328,13 @@ async def firework(np, divider=2, pops=15):
             break
         np.np.fill(BLACK)         # make all leds Black !
         np.np[i % n] = icolor        # turn the i-th led to the color
-        np.np[(i + d) % n] = icolor        # turn the i-th led to the color
+        np.np[n-1-i % n] = icolor        # turn the i-th led to the color
         await uasyncio.sleep(0)  # wait for all them nps to be done 
         np.illuminate()
         await uasyncio.sleep_ms(wait)
         
         np.np[i % n] = icocolor        # turn the i-th led to the color
-        np.np[(i + d) % n] = icolor 
+        np.np[n-1-i % n] = icocolor 
         await uasyncio.sleep(0)  # wait for all them nps to be done 
         np.illuminate()
         await uasyncio.sleep_ms(wait)
@@ -430,6 +431,30 @@ async def additive_random(np):
     n=np.n
     # ONE random led gets turned into a random color for
     
+    def wheel_two(pos, steps=1024):
+        pos = pos % steps
+        segment = steps // 3
+        if pos < segment:
+            return (
+                255 - int(pos * 255 / segment),
+                int(pos * 255 / segment),
+                0
+            )
+        elif pos < 2 * segment:
+            pos -= segment
+            return (
+                0,
+                255 - int(pos * 255 / segment),
+                int(pos * 255 / segment)
+            )
+        else:
+            pos -= 2 * segment
+            return (
+                int(pos * 255 / segment),
+                0,
+                255 - int(pos * 255 / segment)
+            )
+
     def wheel(pos):
         # Input a value 0 to 255 to get a color value.
         # The colours are a transition r - g - b - back to r.
@@ -444,7 +469,9 @@ async def additive_random(np):
         pos -= 170
         return (pos * 3, 0, 255 - pos * 3)
     lucky_Led = Rondo.randrange(n)
-    lucky_color = wheel(Rondo.randrange(256))
+    lucky_color = wheel_two(Rondo.randrange(1024))
+#     lucky_color = wheel(Rondo.randrange(256))
+#     lucky_color = (Rondo.randrange(256),Rondo.randrange(256),Rondo.randrange(256))
     np.setcolor(ith_led= lucky_Led, color = lucky_color)
     np.illuminate()
     await uasyncio.sleep_ms(wait)
