@@ -103,6 +103,10 @@ async def pixelones():
                 current_status = 'AdditiveRandom'
                 while status=='AdditiveRandom':
                     await uasyncio.gather(additive_random(np), additive_random(np2), additive_random(np3))          
+            elif status== 'WaterWaves':
+                current_status = 'WaterWaves'
+                while status=='WaterWaves':
+                    await uasyncio.gather(water_waves(np), water_waves(np2), water_waves(np3))          
             elif status== 'Random':
                 current_status = 'Random'
                 while status=='Random':
@@ -120,10 +124,10 @@ async def modes(request):
     if "co_color" in request :
         co_color=findrgbs(request)    
         
-    elif "wait" in request:
+    if "wait" in request:
         wait = set_waiting_time(request)
         
-    elif "/monochrome" in request:
+    if "/monochrome" in request:
         status="Monochrome"
         
     elif "/blink" in request:
@@ -158,7 +162,9 @@ async def modes(request):
         
     elif "/add_random" in request:
         status="AdditiveRandom"    
-        
+    
+    elif "/water_waves" in request:
+        status="WaterWaves" 
 
     await uasyncio.sleep(0)
     
@@ -475,3 +481,50 @@ async def additive_random(np):
     np.setcolor(ith_led= lucky_Led, color = lucky_color)
     np.illuminate()
     await uasyncio.sleep_ms(wait)
+    
+async def water_waves(np, waves=2, speed_factor=1, divider=2):
+    global wait, status, color, co_color
+    n = np.n
+    if (n % 2 == 0):
+        d = int(n/divider) # d = 20/2 = 10
+    else:
+        d = int((n-1)/divider)
+    speed=math.pi*speed_factor*0.1
+    rounds = int(2*math.pi/speed)
+    print (rounds,2*math.pi/speed)
+
+
+    # define base and highlight blues
+    color = (0, 0, 80)
+    co_color = (0, 150, 255)
+
+    # smooth color blending between two colors
+    def blend(c1, c2, t):
+        return (
+            int(c1[0] + (c2[0] - c1[0]) * t),
+            int(c1[1] + (c2[1] - c1[1]) * t),
+            int(c1[2] + (c2[2] - c1[2]) * t) )
+
+    phase = 0
+    for j in range (rounds):
+        if status!='WaterWaves': # break if the mode has changed
+            break
+        for i in range(d):
+            # sine wave pattern across LEDs
+            wave = math.sin((i / d) * waves * 2 * math.pi - phase)
+            # normalize -1..1 to 0..1
+            t = (wave + 1) / 2
+
+            # blend between deep blue and light blue
+            np.np[i] = blend(color, co_color, t)
+            np.np[n-1-i] = blend(color, co_color, t)
+
+        np.illuminate()
+        await uasyncio.sleep(0)
+        await uasyncio.sleep_ms(wait)
+
+        # move the wave along the strip
+        phase += speed
+
+        if phase > 2 * math.pi:
+            phase -= 2 * math.pi

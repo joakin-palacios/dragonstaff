@@ -131,6 +131,9 @@ async def webpage(color, state):
             <form action="/random_xD">
                 <button type="submit">Random!</button>
             </form>
+            <form action="/water_waves">
+                <button type="submit">Waves</button>
+            </form>
         </div>
         <p> mode: %s <br> waiting time : %d ms <br> Main and secondary colors : <span style="display: inline-block;
   width: 25px; height: 25px; background-color: #%s; vertical-align: middle; margin-left: 5px;   border: 2px solid black;

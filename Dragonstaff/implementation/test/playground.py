@@ -65,7 +65,7 @@ async def water_waves(np, waves=2, speed_factor=1, divider=2):
 
 async def main():
     while True:
-        await water(np)
+        await water_waves(np)
 try:
     uasyncio.run(main())
 finally:
