@@ -106,7 +106,11 @@ async def pixelones():
             elif status== 'WaterWaves':
                 current_status = 'WaterWaves'
                 while status=='WaterWaves':
-                    await uasyncio.gather(water_waves(np), water_waves(np2), water_waves(np3))          
+                    await uasyncio.gather(water_waves(np), water_waves(np2), water_waves(np3))
+            elif status== 'TrigonometricFade':
+                current_status = 'TrigonometricFade'
+                while status=='WaterWaves':
+                    await uasyncio.gather(trigonometric_fade(np), trigonometric_fade(np2), trigonometric_fade(np3))          
             elif status== 'Random':
                 current_status = 'Random'
                 while status=='Random':
@@ -164,7 +168,10 @@ async def modes(request):
         status="AdditiveRandom"    
     
     elif "/water_waves" in request:
-        status="WaterWaves" 
+        status="WaterWaves"
+        
+    elif "/trigonometric_fade" in request:
+        status="TrigonometricFade"         
 
     await uasyncio.sleep(0)
     
@@ -528,3 +535,37 @@ async def water_waves(np, waves=2, speed_factor=1, divider=2):
 
         if phase > 2 * math.pi:
             phase -= 2 * math.pi
+            
+async def trigonometric_fade(np, steps=20):
+    global wait, status, color, co_color
+
+    def ease(t):
+        return 0.5 * (1 - math.cos(math.pi * t))
+    
+    def blend(c1, c2, t):
+        """Blend two RGB colors by fraction t (0–1)."""
+        return (
+            int(c1[0] + (c2[0] - c1[0]) * t),
+            int(c1[1] + (c2[1] - c1[1]) * t),
+            int(c1[2] + (c2[2] - c1[2]) * t))
+
+    for i in range(steps + 1):
+        if status != 'TrigonometricFade':
+            break
+        t = ease(i / steps)
+        color_now = blend(co_color, color, t)
+        np.np.fill(color_now)
+        np.illuminate()
+        await uasyncio.sleep(0)
+        await uasyncio.sleep_ms(wait)
+
+    # Fade backward (to → from)
+    for i in range(steps + 1):
+        if status != 'TrigonometricFade':
+            break
+        t = ease(i / steps)
+        color_now = blend(color, co_color, t)
+        np.np.fill(color_now)
+        np.illuminate()
+        await uasyncio.sleep(0)
+        await uasyncio.sleep_ms(wait)

@@ -134,6 +134,9 @@ async def webpage(color, state):
             <form action="/water_waves">
                 <button type="submit">Waves</button>
             </form>
+            <form action="/trigonometric_fade">
+                <button type="submit">Fade</button>
+            </form>
         </div>
         <p> mode: %s <br> waiting time : %d ms <br> Main and secondary colors : <span style="display: inline-block;
   width: 25px; height: 25px; background-color: #%s; vertical-align: middle; margin-left: 5px;   border: 2px solid black;
