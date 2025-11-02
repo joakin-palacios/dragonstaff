@@ -38,9 +38,17 @@ Development
     [ ] change the class so that to change settings inside of them one has to use one of the class functions to set it (good architecture) !!! 
 [ ] find a way for the led control to run in a separate core (so that a faster refresh rate can be chosen)
 [ ] explore ways to go faster than 1ms change rate :) 
-[ ] refactor firework function so that it can be used with 20 pixels variant :D
-[ ] add water effect mode
 [ ] add a setting where one side can be x mode and the other y 
+
+Led effects:
+[x] refactor firework function so that it can be used with 20 pixels variant :D
+[x] add water effect mode
+[ ] add eifel tower effect
+[ ] matrix rain effect
+[ ] Lightning / Spark, Random intense white flashes with decay. (with rain?)
+[ ] add trail to cycle? 
+[ ] add heartbeat mdoe
+[ ] Aurora / Northern Lights Layers of green, blue, and purple moving with overlapping wave speeds. Use multiple sine functions with different phases.
 
 
 Hardware development:   
