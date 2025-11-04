@@ -15,7 +15,7 @@ async def handle_request(reader, writer):
         
 
         # try to serve static file
-        await uasyncio.create_task(snf.modes(raw_request))
+        await snf.modes(raw_request)
         # send reponse back to client
         if raw_request == b'inquisition':
             print (f'{snf.status}  {snf.color}  {snf.co_color}  {snf.wait}')

@@ -3,13 +3,19 @@ import neopixel
 import uasyncio
 import random as Rondo
 import ledspokehandler
-
+import math
 
 # General Setup
-status="start_up"
-color=(40,128,20)
-co_color=(0,0,0)
-wait=60 
+class Side:
+    color = (40,128,20)
+    co_color = (0,0,0)
+    status = "start_up"
+    wait = 60
+    last_side="both_sides"
+    
+this_side = Side()
+side_b = Side()
+
 led = Pin("LED", Pin.OUT)
 
 # Wifi Setup
@@ -44,134 +50,129 @@ async def pixelones():
 # if the status changes, then it changes the routine,
 # if the color changes, then it changes the color,
 # if nothing changes, then it continues doing whatever it was doing, until it detects a change
-    global color, status
+    global this.side
     
-    current_status = status
+    current_status = this_side.status
     
-    if status=='start_up':
+    if this_side.status=='start_up':
         await uasyncio.gather(initialize(np),
                               initialize(np2),
                               initialize(np3)) #---- initialize them lights ! ----
             
     while True:
-        if current_status != status :
+        if current_status != this_side.status :
             #detects a change in the force and acts upon it !
             #otherwise the functions themselves should be the ones that keep alive?
-            if status=='start_up':
+            if this_side.status=='start_up':
                 current_status = 'start_up'
                 await uasyncio.gather(initialize(np), initialize(np2), initialize(np3)) #---- initialize them lights ! ----
-            elif status=='Monochrome':
+            elif this_side.status=='Monochrome':
                 current_status = 'Monochrome'
-                while status=='Monochrome':
+                while this_side.status=='Monochrome':
                     await uasyncio.gather(fillpix(np), fillpix(np2), fillpix(np3))
-            elif status== 'Blink':
+            elif this_side.status== 'Blink':
                 current_status = 'Blink'
-                while status=='Blink':
+                while this_side.status=='Blink':
                     await uasyncio.gather(blink(np), blink(np2), blink(np3))
-            elif status== 'Cycle':
+            elif this_side.status== 'Cycle':
                 current_status = 'Cycle'
-                while status=='Cycle':
+                while this_side.status=='Cycle':
                     await uasyncio.gather(cycle(np), cycle(np2), cycle(np3))
-            elif status== 'Bycle':
+            elif this_side.status== 'Bycle':
                 current_status = 'Bycle'
-                while status=='Bycle':
+                while this_side.status=='Bycle':
                     await uasyncio.gather(bycle(np), bycle(np2), bycle(np3))                
-            elif status== 'Bounce':
+            elif this_side.status== 'Bounce':
                 current_status = 'Bounce'
-                while status=='Bounce':
+                while this_side.status=='Bounce':
                     await uasyncio.gather(bounce(np), bounce(np2), bounce(np3))
-            elif status== 'MPU Sensor':
+            elif this_side.status== 'MPU Sensor':
                 current_status = 'MPU Sensor'
                 pass
-            elif status== 'Rainbow':
+            elif this_side.status== 'Rainbow':
                 current_status = 'Rainbow'
-                while status=='Rainbow':
+                while this_side.status=='Rainbow':
                     await uasyncio.gather(rainbow(np), rainbow(np2), rainbow(np3))
-            elif status== 'Firework':
+            elif this_side.status== 'Firework':
                 current_status = 'Firework'
-                while status=='Firework':
+                while this_side.status=='Firework':
                     await uasyncio.gather(firework(np), firework(np2), firework(np3))
-            elif status== 'OnlyEnds':
+            elif this_side.status== 'OnlyEnds':
                 current_status = 'OnlyEnds'
-                while status=='OnlyEnds':
+                while this_side.status=='OnlyEnds':
                     await uasyncio.gather(only_ends(np), only_ends(np2), only_ends(np3))
-            elif status== 'OnlyEndsBlink':
+            elif this_side.status== 'OnlyEndsBlink':
                 current_status = 'OnlyEndsBlink'
-                while status=='OnlyEndsBlink':
+                while this_side.status=='OnlyEndsBlink':
                     await uasyncio.gather(only_ends(np, blink=True), only_ends(np2, blink=True), only_ends(np3, blink=True))
-            elif status== 'AdditiveRandom':
+            elif this_side.status== 'AdditiveRandom':
                 current_status = 'AdditiveRandom'
-                while status=='AdditiveRandom':
+                while this_side.status=='AdditiveRandom':
                     await uasyncio.gather(additive_random(np), additive_random(np2), additive_random(np3))          
-            elif status== 'WaterWaves':
+            elif this_side.status== 'WaterWaves':
                 current_status = 'WaterWaves'
-                while status=='WaterWaves':
+                while this_side.status=='WaterWaves':
                     await uasyncio.gather(water_waves(np), water_waves(np2), water_waves(np3))
-            elif status== 'TrigonometricFade':
+            elif this_side.status== 'TrigonometricFade':
                 current_status = 'TrigonometricFade'
-                while status=='WaterWaves':
+                while this_side.status=='WaterWaves':
                     await uasyncio.gather(trigonometric_fade(np), trigonometric_fade(np2), trigonometric_fade(np3))          
-            elif status== 'Random':
+            elif this_side.status== 'Random':
                 current_status = 'Random'
-                while status=='Random':
+                while this_side.status=='Random':
                     await uasyncio.gather(random(np), random(np2), random(np3))
             current_color = color
         await uasyncio.sleep_ms(100)
 
-
+async def side_parser(request):
+    global this_side, side_b
+    # first determines which side needs a change and then calls the function to change the global params
+    if "side_b" in request :
+        this_side.last_side = "side_b"    
+    elif "side_a" in request:
+        this_side.last_side = "side_a"        
+    elif "both_sides" in request:
+        this_side.last_side = "both_sides"
         
-async def modes(request):
-    global color, status, wait, co_color
+    if this_side.last_side ==  "side_a":
+        await modes(request, this_side)
+    elif this_side.last_side ==  "side_b":
+        await modes(request, side_b)
+    else:
+        await asyncio.gather(modes(request, this_side), modes(request, side_b))
+        
+async def modes(request, side_in_question):
+
     if "main_color" in request :
-        color=findrgbs(request)
+        side_in_question.color=findrgbs(request)
         
     if "co_color" in request :
-        co_color=findrgbs(request)    
+        side_in_question.co_color=findrgbs(request)    
         
     if "wait" in request:
-        wait = set_waiting_time(request)
+        side_in_question.wait = set_waiting_time(request)
         
-    if "/monochrome" in request:
-        status="Monochrome"
-        
-    elif "/blink" in request:
-        status="Blink"    
-    
-    elif "/cycle" in request:
-        status="Cycle"
-    
-    elif "/bycle" in request:
-        status="Bycle"
-    
-    elif "/bounce" in request:
-        status="Bounce"
+    commands = {
+        "/monochrome": "Monochrome",
+        "/blink": "Blink",
+        "/cycle": "Cycle",
+        "/bycle": "Bycle",
+        "/bounce": "Bounce",
+        "/MPU": "MPU Sensor",
+        "/rainbow": "Rainbow",
+        "/firework": "Firework",
+        "/random_xD": "Random",
+        "/only_ends": "OnlyEnds",
+        "/only_blink": "OnlyEndsBlink",
+        "/add_random": "AdditiveRandom",
+        "/water_waves": "WaterWaves",
+        "/trigonometric_fade": "TrigonometricFade",
+    }
 
-    elif "/MPU" in request:
-        status="MPU Sensor"
-
-    elif "/rainbow" in request:
-        status="Rainbow"
-        
-    elif "/firework" in request:
-        status="Firework"
-        
-    elif "/random_xD" in request:
-        status="Random"
-        
-    elif "/only_ends" in request:
-        status="OnlyEnds"
-        
-    elif "/only_blink" in request:
-        status="OnlyEndsBlink"
-        
-    elif "/add_random" in request:
-        status="AdditiveRandom"    
-    
-    elif "/water_waves" in request:
-        status="WaterWaves"
-        
-    elif "/trigonometric_fade" in request:
-        status="TrigonometricFade"         
+    for cmd, value in commands.items():
+        if cmd in request:
+            side_in_question.status = value
+            break        
 
     await uasyncio.sleep(0)
     
