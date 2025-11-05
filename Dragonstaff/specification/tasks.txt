@@ -39,6 +39,9 @@ Development
 [ ] find a way for the led control to run in a separate core (so that a faster refresh rate can be chosen)
 [ ] explore ways to go faster than 1ms change rate :) 
 [ ] add a setting where one side can be x mode and the other y 
+[ ] parser idea: split url by &, for x in split : parser (x)
+                internal variable in  parser that checks both, side a or b, and then sets modes and settings :D (settings are stored in class)
+                  have class fit to variable and class have the functionality of which side :) ?
 
 Led effects:
 [x] refactor firework function so that it can be used with 20 pixels variant :D

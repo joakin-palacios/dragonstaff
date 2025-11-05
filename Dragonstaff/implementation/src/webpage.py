@@ -137,6 +137,15 @@ async def webpage(color, state):
             <form action="/trigonometric_fade">
                 <button type="submit">Fade</button>
             </form>
+            <form action="/side_b">
+                <button type="submit">Side B</button>
+            </form>
+            <form action="/side_a">
+                <button type="submit">Side A</button>
+            </form>
+            <form action="/both_sides">
+                <button type="submit">Both Sides</button>
+            </form>
         </div>
         <p> mode: %s <br> waiting time : %d ms <br> Main and secondary colors : <span style="display: inline-block;
   width: 25px; height: 25px; background-color: #%s; vertical-align: middle; margin-left: 5px;   border: 2px solid black;

@@ -11,10 +11,10 @@ import _thread
 
 def interpret(ss):
     pub=str(ss).replace("b", "",1).replace("'", "").replace("(", "").replace(")", "").replace(",", "").split()
-    snf.status=pub[0]
-    snf.wait=int(pub[-1])
-    snf.color=(int(pub[1]),int(pub[2]),int(pub[3]))
-    snf.co_color=(int(pub[4]),int(pub[5]),int(pub[6]))
+    snf.this_side.status=pub[0]
+    snf.this_side.wait=int(pub[-1])
+    snf.this_side.color=(int(pub[1]),int(pub[2]),int(pub[3]))
+    snf.this_side.co_color=(int(pub[4]),int(pub[5]),int(pub[6]))
     
 def connect():
     print ('i have started doing stuffffff !!!!')
