@@ -459,9 +459,6 @@ async def water_waves(np, waves=2, speed_factor=1, divider=2):
     speed=math.pi*speed_factor*0.1
     rounds = int(2*math.pi/speed)
 
-    this_side.color = (0, 0, 80)
-    this_side.co_color = (0, 150, 255)
-
    # smooth color blending between two colors
     def blend(c1, c2, t):
         return (

@@ -177,5 +177,5 @@ async def webpage(color, state):
     </div>
 </body>
 
-</html> """ % (snf.status, snf.wait, hex_string(snf.color), hex_string(snf.co_color), hex_string(snf.color), hex_string(snf.co_color))
+</html> """ % (snf.this_side.status, snf.this_side.wait, hex_string(snf.this_side.color), hex_string(snf.this_side.co_color), hex_string(snf.this_side.color), hex_string(snf.this_side.co_color))
     return bytes(html, 'utf-8')
