@@ -17,10 +17,10 @@ async def handle_request(reader, writer):
         await snf.side_parser(raw_request)
         # send reponse back to client
         if raw_request == b'inquisition':
-            print (f'{snf.side_b.status}  {snf.side_b.color}  {snf.side_b.co_color}  {snf.side_b.wait}')
-            writer.write(bytes(f'{snf.side_b.status}  {snf.side_b.color}  {snf.side_b.co_color}  {snf.side_b.wait}', 'utf-8'))
+            print (f'{snf.np1.status}  {snf.np1.color}  {snf.np1.co_color}  {snf.np1.wait}')
+            writer.write(bytes(f'{snf.np1.status}  {snf.np1.color}  {snf.np1.co_color}  {snf.np1.wait}', 'utf-8'))
         else:
-            html = await webpage.webpage(snf.this_side.color, snf.this_side.status)
+            html = await webpage.webpage(snf.np1.color, snf.np1.status)
 #             print (html)
             writer.write(html)
         # allow other tasks to run while data being sent

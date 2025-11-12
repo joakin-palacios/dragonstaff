@@ -43,6 +43,12 @@ async def webpage(color, state):
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+        
+        .row-n-center {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        }
 
 
 
@@ -137,15 +143,31 @@ async def webpage(color, state):
             <form action="/trigonometric_fade">
                 <button type="submit">Fade</button>
             </form>
-            <form action="/side_b">
-                <button type="submit">Side B</button>
-            </form>
-            <form action="/side_a">
-                <button type="submit">Side A</button>
-            </form>
-            <form action="/both_sides">
-                <button type="submit">Both Sides</button>
-            </form>
+            <div class="row-n-center">
+                <form action="/side_a">
+                    <button type="submit">Side A</button>
+                </form>
+                <form action="/both_sides">
+                    <button type="submit">Both Sides</button>
+                </form>            
+                <form action="/side_b">
+                    <button type="submit">Side B</button>
+                </form>
+            </div>
+            <div class="row-n-center">
+                <form action="/all_spokes">
+                    <button type="submit">All</button>
+                </form>
+                <form action="/spoke_one">
+                    <button type="submit">First</button>
+                </form>            
+                <form action="/spoke_two">
+                    <button type="submit">Second</button>
+                </form>
+                <form action="/spoke_three">
+                    <button type="submit">Third</button>
+                </form>
+            </div>
         </div>
         <p> mode: %s <br> waiting time : %d ms <br> Main and secondary colors : <span style="display: inline-block;
   width: 25px; height: 25px; background-color: #%s; vertical-align: middle; margin-left: 5px;   border: 2px solid black;
@@ -177,5 +199,5 @@ async def webpage(color, state):
     </div>
 </body>
 
-</html> """ % (snf.this_side.status, snf.this_side.wait, hex_string(snf.this_side.color), hex_string(snf.this_side.co_color), hex_string(snf.this_side.color), hex_string(snf.this_side.co_color))
+</html> """ % (snf.np1.status, snf.np1.wait, hex_string(snf.np1.color), hex_string(snf.np1.co_color), hex_string(snf.np1.color), hex_string(snf.np1.co_color))
     return bytes(html, 'utf-8')

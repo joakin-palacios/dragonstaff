@@ -6,17 +6,8 @@ import ledspokehandler
 import math
 
 # General Setup
-class Side:
-    color = (40,128,20)
-    co_color = (0,0,0)
-    status = "start_up"
-    wait = 60
-    last_side="both_sides"
-    
-this_side = Side()
-side_b = Side()
-
 led = Pin("LED", Pin.OUT)
+spokes_active = [1,2,3]
 
 # Wifi Setup
 ssid = '''J's DragonStaff'''
@@ -36,53 +27,72 @@ COLORS = (RED, YELLOW, GREEN, CYAN, BLUE, PURPLE, ORANGE, WHITE, BLACK)
 
 
 # Neopixel Setup
-BRIGHTNESS= 0.05 # between 0 and 1
-np = ledspokehandler.ledSpoke(mcuPin=19, nr_of_leds=20)
+
+np1 = ledspokehandler.ledSpoke(mcuPin=19, nr_of_leds=20)
 np2 = ledspokehandler.ledSpoke(mcuPin=20, nr_of_leds=20) 
 np3 = ledspokehandler.ledSpoke(mcuPin=21, nr_of_leds=20) 
 
+o_np1 = ledspokehandler.otherSideSpoke(nr_of_leds=20)
+o_np2 = ledspokehandler.otherSideSpoke(nr_of_leds=20) 
+o_np3 = ledspokehandler.otherSideSpoke(nr_of_leds=20) 
 
+spokes = {1: np1, 2: np2, 3: np3}
+o_spokes = {1: o_np1, 2: o_np2, 3: o_np3}
+
+class Side:
+    last_side="both_sides"
+    spokes"all_spokes"
+this_side= Side()
 
 
 # General functions
 async def pixelones():
 # controls all neopixels asynchronously depending on the mode and the color
-# if the status changes, then it changes the routine,
-# if the color changes, then it changes the color,
+# if the status changes, then it changes the routine
 # if nothing changes, then it continues doing whatever it was doing, until it detects a change
-    global this_side
-    
-    current_status = this_side.status
-    
-    if this_side.status=='start_up':
-        await uasyncio.gather(initialize(np),
-                              initialize(np2),
-                              initialize(np3)) #---- initialize them lights ! ----
+    current_status = [None, None, None]
+    if any(spokes[x].status == 'start_up' for x in spokes_active):
+        await uasyncio.gather(
+            *(initialize(spokes[x]) for x in spokes_active if spokes[x].status == 'start_up')
+        )            
+            
     status_functions = {
-        'start_up': lambda: uasyncio.gather(initialize(np), initialize(np2), initialize(np3)),
-        'Monochrome': lambda: uasyncio.gather(fillpix(np), fillpix(np2), fillpix(np3)),
-        'Blink': lambda: uasyncio.gather(blink(np), blink(np2), blink(np3)),
-        'Cycle': lambda: uasyncio.gather(cycle(np), cycle(np2), cycle(np3)),
-        'Bycle': lambda: uasyncio.gather(bycle(np), bycle(np2), bycle(np3)),
-        'Bounce': lambda: uasyncio.gather(bounce(np), bounce(np2), bounce(np3)),
-        'MPU Sensor': lambda: None,  # Placeholder
-        'Rainbow': lambda: uasyncio.gather(rainbow(np), rainbow(np2), rainbow(np3)),
-        'Firework': lambda: uasyncio.gather(firework(np), firework(np2), firework(np3)),
-        'OnlyEnds': lambda: uasyncio.gather(only_ends(np), only_ends(np2), only_ends(np3)),
-        'OnlyEndsBlink': lambda: uasyncio.gather(only_ends(np, blink=True), only_ends(np2, blink=True), only_ends(np3, blink=True)),
-        'AdditiveRandom': lambda: uasyncio.gather(additive_random(np), additive_random(np2), additive_random(np3)),
-        'WaterWaves': lambda: uasyncio.gather(water_waves(np), water_waves(np2), water_waves(np3)),
-        'TrigonometricFade': lambda: uasyncio.gather(trigonometric_fade(np), trigonometric_fade(np2), trigonometric_fade(np3)),
-        'Random': lambda: uasyncio.gather(random(np), random(np2), random(np3)),
+        'start_up': initialize,
+        'Monochrome': fillpix,
+        'Blink': blink,
+        'Cycle': cycle,
+        'Bycle': bycle,
+        'Bounce': bounce,
+        'MPU Sensor': lambda np: None,  # Placeholder
+        'Rainbow': rainbow,
+        'Firework': firework,
+        'OnlyEnds': only_ends,
+        'OnlyEndsBlink': lambda np: only_ends(np, blink=True),
+        'AdditiveRandom': additive_random,
+        'WaterWaves': water_waves,
+        'TrigonometricFade': trigonometric_fade,
+        'Random': random,
     }
     while True:
-        if current_status != this_side.status:
-            current_status = this_side.status
-            routine = status_functions.get(current_status)
-            if routine:
-                while this_side.status == current_status:
-                    await routine() 
+         new_status = [spokes[i].status for i in spokes]
 
+        # If any spoke's status changed, update
+        if new_status != current_status:
+            current_status = new_status
+
+            # Build a list of coroutine tasks — one per spoke
+            tasks = []
+            for i, status in enumerate(current_status, start=1):
+                func = status_functions.get(status)
+                if func:
+                    tasks.append(func(spokes[i]))
+
+            # Cancel any ongoing effects before starting new ones (optional)
+            # You may want to handle this if your routines run indefinitely
+
+            # Run all status routines concurrently in one gather call
+            if tasks:
+                await uasyncio.gather(*tasks)
         await uasyncio.sleep_ms(100)
 
 async def side_parser(request):
@@ -94,24 +104,58 @@ async def side_parser(request):
         this_side.last_side = "side_a"        
     elif "/both_sides" in request:
         this_side.last_side = "both_sides"
+    elif "/spoke_one" in request:
+        this_side.spokes = "spoke_one"
+    elif "/spoke_two" in request:
+        this_side.spokes = "spoke_two"
+    elif "/spoke_three" in request:
+        this_side.spokes = "spoke_three"
+    elif "/all_spokes" in request:
+        this_side.spokes = "all_spokes"
         
     if this_side.last_side ==  "side_a":
-        await modes(request, this_side)
+        if this_side.spokes == "all_spokes":
+            await uasyncio.gather(modes(request, np1), modes(request, np2), modes(request, np3))
+        elif this_side.spokes == "spoke_one":
+            await modes(request, np1)
+        elif this_side.spokes == "spoke_two":
+            await modes(request, np2)
+        elif this_side.spokes == "spoke_three":
+            await modes(request, np3)
+
     elif this_side.last_side ==  "side_b":
-        await modes(request, side_b)
+        if this_side.spokes == "all_spokes":
+            await uasyncio.gather(modes(request, o_np1), modes(request, o_np2), modes(request, o_np3))
+        elif this_side.spokes == "spoke_one":
+            await modes(request, o_np1)
+        elif this_side.spokes == "spoke_two":
+            await modes(request, o_np2)
+        elif this_side.spokes == "spoke_three":
+            await modes(request, o_np3)
     else:
-        await uasyncio.gather(modes(request, this_side), modes(request, side_b))
+        if this_side.spokes == "all_spokes":
+            await uasyncio.gather(modes(request, np1), modes(request, np2), modes(request, np3))
+            await uasyncio.gather(modes(request, o_np1), modes(request, o_np2), modes(request, o_np3))
+        elif this_side.spokes == "spoke_one":
+            await modes(request, np1)
+            await modes(request, o_np1)
+        elif this_side.spokes == "spoke_two":
+            await modes(request, np2)
+            await modes(request, o_np2)
+        elif this_side.spokes == "spoke_three":
+            await modes(request, np3)
+            await modes(request, o_np3)
         
-async def modes(request, side_in_question):
+async def modes(request, np):
 
     if "main_color" in request :
-        side_in_question.color=findrgbs(request)
+        np.color=findrgbs(request)
         
     if "co_color" in request :
-        side_in_question.co_color=findrgbs(request)    
+        np.co_color=findrgbs(request)    
         
     if "wait" in request:
-        side_in_question.wait = set_waiting_time(request)
+        np.wait = set_waiting_time(request)
         
     commands = {
         "/monochrome": "Monochrome",
@@ -132,7 +176,7 @@ async def modes(request, side_in_question):
 
     for cmd, value in commands.items():
         if cmd in request:
-            side_in_question.status = value
+            np.status = value
             break        
 
     await uasyncio.sleep(0)
