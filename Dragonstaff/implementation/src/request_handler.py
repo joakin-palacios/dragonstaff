@@ -17,8 +17,7 @@ async def handle_request(reader, writer):
         await snf.side_parser(raw_request)
         # send reponse back to client
         if raw_request == b'inquisition':
-            print (f'{snf.np1.status}  {snf.np1.color}  {snf.np1.co_color}  {snf.np1.wait}')
-            writer.write(bytes(f'{snf.np1.status}  {snf.np1.color}  {snf.np1.co_color}  {snf.np1.wait}', 'utf-8'))
+            writer.write(webpage.inquisition())
         else:
             html = await webpage.webpage(snf.np1.color, snf.np1.status)
 #             print (html)
