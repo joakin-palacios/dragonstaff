@@ -202,9 +202,9 @@ async def webpage(color, state):
 </html> """ % (snf.np1.status, snf.np1.wait, hex_string(snf.np1.color), hex_string(snf.np1.co_color), hex_string(snf.np1.color), hex_string(snf.np1.co_color))
     return bytes(html, 'utf-8')
 
-async def inquisition():
+def inquisition():
     
-    return bytes(f'''{snf.o_np1.co_color}/{snf.o_np1.status}/{snf.o_np1.wait}/{snf.o_np1.magic_number}/{snf.o_np1.brightness}!!{snf.o_np2.co_color}/{snf.o_np2.status}/{snf.o_np2.wait}/{snf.o_np2.magic_number}/{snf.o_np2.brightness}!!{snf.o_np3.co_color}/{snf.o_np3.status}/{snf.o_np3.wait}/{snf.o_np3.magic_number}/{snf.o_np3.brightness}'''
+    return bytes(f'''{snf.o_np1.color}/{snf.o_np1.co_color}/{snf.o_np1.status}/{snf.o_np1.wait}/{snf.o_np1.magic_number}/{snf.o_np1.brightness}!!{snf.o_np2.color}/{snf.o_np2.co_color}/{snf.o_np2.status}/{snf.o_np2.wait}/{snf.o_np2.magic_number}/{snf.o_np2.brightness}!!{snf.o_np3.color}/{snf.o_np3.co_color}/{snf.o_np3.status}/{snf.o_np3.wait}/{snf.o_np3.magic_number}/{snf.o_np3.brightness}'''
                  , 'utf-8')
 
     

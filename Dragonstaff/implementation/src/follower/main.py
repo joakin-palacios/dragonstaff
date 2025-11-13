@@ -9,30 +9,68 @@ import neopixel
 import uasyncio
 import _thread
 
+DEBUG= False
+
+def parse_tuple(s):
+    s = s.strip("() ")           # remove parentheses and spaces
+    if not s:
+        return tuple()
+    return tuple(int(x) for x in s.split(','))
+
 def interpret(ss):
-    pub=str(ss).replace("b", "",1).replace("'", "").replace("(", "").replace(")", "").replace(",", "").split()
-    snf.this_side.status=pub[0]
-    snf.this_side.wait=int(pub[-1])
-    snf.this_side.color=(int(pub[1]),int(pub[2]),int(pub[3]))
-    snf.this_side.co_color=(int(pub[4]),int(pub[5]),int(pub[6]))
+
+    text = ss.decode('utf-8')
+    parts = text.split('!!')
+    s=[]
+    x=0
+    for i in parts:
+        s.append(parts[x].split('/'))
+        x=x+1
+    if DEBUG:
+        print(s)
+    snf.np1.color = parse_tuple(s[0][0])
+    snf.np1.co_color = parse_tuple(s[0][1])
+    snf.np1.status = s[0][2]
+    snf.np1.wait = int(s[0][3])
+    snf.np1.magic_number = int(s[0][4])
+    snf.np1.brightness = int(s[0][5])
+    
+    snf.np2.color = parse_tuple(s[1][0])
+    snf.np2.co_color = parse_tuple(s[1][1])
+    snf.np2.status = s[1][2]
+    snf.np2.wait = int(s[1][3])
+    snf.np2.magic_number = int(s[1][4])
+    snf.np2.brightness = int(s[1][5])
+    
+    snf.np3.color = parse_tuple(s[2][0])
+    snf.np3.co_color = parse_tuple(s[2][1])
+    snf.np3.status = s[2][2]
+    snf.np3.wait = int(s[2][3])
+    snf.np3.magic_number = int(s[2][4])
+    snf.np3.brightness = int(s[2][5])
+
     
 def connect():
-    print ('i have started doing stuffffff !!!!')
+    if DEBUG:
+        print ('i have started doing stuffffff !!!!')
     wlan = network.WLAN(network.STA_IF)
     wlan.active(False)
     wlan.active(True)
     wlan.connect(snf.ssid, snf.password)
 
     while not wlan.isconnected():
-        print("Waiting to connect:")
-        print (wlan.status())
+        if DEBUG:
+            print("Waiting to connect:")
+            print (wlan.status())
         time.sleep(1)
         
-    print (wlan.isconnected() )
+    if DEBUG:
+        print (wlan.isconnected() )
     # Should be connected and have an IP address
     wlan.status() # 3 == success
     wlan.ifconfig()
-    print(wlan.ifconfig())
+    if DEBUG:
+        print(wlan.ifconfig())
     
 def threaded_connection():
     while True:
@@ -44,6 +82,7 @@ def threaded_connection():
             s = socket.socket() # Open socket
             s.connect(addr)
             s.send(b"THE inquisition") # Send request
+
             ss=s.recv(512) # Store reply
             # Print what we received
             interpret(ss)
