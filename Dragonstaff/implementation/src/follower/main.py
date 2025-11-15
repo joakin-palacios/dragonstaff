@@ -97,13 +97,13 @@ def threaded_connection():
             
 async def main():
     chunks=uasyncio.create_task(snf.pixelones())
+    ledBlink=uasyncio.create_task(snf.led_blink(10,700))
     while True:
         await uasyncio.sleep(1)
 
 
 
 #     uasyncio.run(main())
- 
-connect()
 _thread.start_new_thread(uasyncio.run, ([main()]))
+connect()
 threaded_connection()
